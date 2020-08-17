@@ -1,5 +1,7 @@
-import pytorch
+import torch
 import matplotlib
 import numpy
 
-print("Hello World")
+print("Torch: ", torch.__version__)
+print("Matplotlib: ", matplotlib.__version__)
+print("Numpy: ", numpy.__version__)
