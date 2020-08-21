@@ -10,11 +10,9 @@ class LinearRegressionModel:
         self.W = torch.tensor([[0.0]], requires_grad=True)
         self.b = torch.tensor([[0.0]], requires_grad=True)
 
-    # Predictor
     def f(self, x):
         return x @ self.W + self.b
 
-    # Uses Mean Squared Error
     def loss(self, x, y):
         return torch.mean(torch.square(self.f(x) - y))
 
@@ -90,10 +88,6 @@ def get_data(three_dimensions=False, non_linear=False):
 
     if len(z_list) > 0:
 
-        x_packed = []
-
-        """while len(x_list) > 0:
-            x_packed.append([x_list.pop(), y_list.pop()])"""
         x_train = torch.tensor([[length, weight] for length, weight in zip(x_list, y_list)])
         z_train = torch.tensor(z_list).reshape(-1, 1)
         return x_train, z_train
@@ -102,7 +96,7 @@ def get_data(three_dimensions=False, non_linear=False):
         return x_train, y_train
 
 
-def train(model, x, y, learning_rate, epochs ):
+def train(model, x, y, learning_rate, epochs):
     optimizer = torch.optim.SGD([model.b, model.W], learning_rate)
     for epoch in range(epochs):
         model.loss(x, y).backward()
@@ -111,7 +105,7 @@ def train(model, x, y, learning_rate, epochs ):
     return model
 
 
-def plot_2D(model, x_train, y_train):
+def plot_2d(model, x_train, y_train):
     plt.xlabel('x')
     plt.ylabel('y')
     x = torch.tensor([[torch.min(x_train)], [torch.max(x_train)]])  # x = [[1], [6]]]
@@ -123,7 +117,7 @@ def plot_2D(model, x_train, y_train):
     plt.show()
 
 
-def plot_3D(model, x_train, y_train):
+def plot_3d(model, x_train, y_train):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     plot_info = fig.text(0.01, 0.02, '')
@@ -160,16 +154,16 @@ if __name__ == "__main__":
     model = LinearRegressionModel()
     x, y = get_data()
     train(model, x, y, config["Linear_2d"][0], config["Linear_2d"][1])
-    plot_2D(model, x, y)
+    plot_2d(model, x, y)
 
     # B: 3D
     x, y = get_data(three_dimensions=True)
     model = LinearRegression3D()
     train(model, x, y, config["Linear_3d"][0], config["Linear_3d"][1])
-    plot_3D(model,  x, y)
+    plot_3d(model,  x, y)
 
     # C: Non linear 2D
     model = NonLinearRegressionModel()
     x, y = get_data(non_linear=True)
     train(model, x, y, config["Non_linear"][0], config["Non_linear"][1])
-    plot_2D(model, x, y)
+    plot_2d(model, x, y)
