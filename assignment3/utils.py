@@ -34,6 +34,6 @@ def get_data_mnist():
 
     # Divide training data into batches to speed up optimization
     batches = 600
-    x_train_batches = torch.split(x_train, batches)
-    y_train_batches = torch.split(y_train, batches)
+    x_train_batches = torch.split(x_train.cuda(), batches)
+    y_train_batches = torch.split(y_train.cuda(), batches)
     return x_train_batches, y_train_batches, x_test, y_test

@@ -28,10 +28,16 @@ if __name__ == "__main__":
     print("Training time B: {}".format(training_time))
     print("Accuracy B:  {}%".format(convo_b.accuracy(x_test, y_test).numpy()))
 
+
+    # Todo: hei Jakob, denne linjen bruker cuda.
     convo_c = ConvoC()
 
     start_time = time.time()
-    model = util.train(convo_c, x_train_b, y_train_b, config["convo_a"]["lr"], config["convo_a"]["epochs"])
+    convo_c.cuda()
+    util.train(convo_c, x_train_b, y_train_b, config["convo_a"]["lr"], config["convo_a"]["epochs"])
     training_time = time.time() - start_time
+
+    device = torch.device("cpu")
+    convo_c.to(device)
     print("Training time C: {}".format(training_time))
     print("Accuracy c:  {}%".format(convo_c.accuracy(x_test, y_test).numpy()))
