@@ -109,5 +109,5 @@ class ConvoC(nn.Module):
     def accuracy(self, x, y):
         return torch.mean(torch.eq(self.f(x).argmax(1), y.argmax(1)).float())
 
-class ConvoD(nn.Module):
+class convD(nn.Module):
     pass
