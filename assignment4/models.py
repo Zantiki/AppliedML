@@ -24,24 +24,29 @@ class mmLTSM(nn.Module):
 
     def loss(self, x,
              y):  # x shape: (sequence length, batch size, encoding size), y shape: (sequence length, encoding size)
-        return nn.functional.cross_entropy(self.logits(x), y.argmax(1))
+        x = self.logits(x)
+        print("x_after_logits", x.shape)
+        print(x)
+        print("y_in_loss", y.shape)
+        return nn.functional.cross_entropy(x, y.argmax(1))
 
 
 class moLSTSM(nn.Module):
 
-    batch_size = 4
+    # batch_size = 4
     state_size = 128
+    state_size2 = 14
     encoding_text = 14
     encoding_emoji = 7
 
     def __init__(self):
         super(moLSTSM, self).__init__()
         self.lstm = nn.LSTM(self.encoding_text, self.state_size)  # 128 is the state size
-        self.dense = nn.Linear(self.state_size, self.encoding_emoji) # 128 is the state size
+        self.dense = nn.Linear(self.state_size, self.encoding_emoji)
         # self.dense2 = nn.Linear(14, self.encoding_emoji)
 
-    def reset(self):  # Reset states prior to new input sequence
-        zero_state = torch.zeros(1, self.batch_size, self.state_size)  # Shape: (number of layers, batch size, state size)
+    def reset(self, batch_size):  # Reset states prior to new input sequence
+        zero_state = torch.zeros(1, batch_size, self.state_size)  # Shape: (number of layers, batch size, state size)
         self.hidden_state = zero_state
         self.cell_state = zero_state
 
@@ -52,11 +57,12 @@ class moLSTSM(nn.Module):
         # return self.dense(out[:, -1, :].reshape(-1, 128))
         # print(out[:, -1, :])5
         # print(out.detach().numpy().shape)
-        print(out.shape)
-        x = self.dense(out).reshape(len(out), 28)#.reshape(7, 28)
-        # print("x_after_dense: ", x.shape)
+        # print("x_before_dense: ", x.shape)
+        # print("x_after_ltsm", out.shape)
+        # x = self.dense(out).reshape(len(out), 28)#.reshape(7, 28)
         # x = x.reshape(7, 28*2)
-
+        x = self.dense(out[-1].reshape(-1, 128))
+        # x = x.reshape()
         return x
         # return out
 
@@ -72,5 +78,6 @@ class moLSTSM(nn.Module):
         x = self.logits(x)
         # x = torch.transpose(x, 1, 0)
         # print("x_after_logits", x.shape)
-        # print("y_in_loss", y.argmax(1).shape)
+        # print("y_in_loss", y)
+        # exit(0)
         return nn.functional.cross_entropy(x, y.argmax(1))

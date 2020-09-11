@@ -86,7 +86,7 @@ class ConvoC(nn.Module):
         self.dense = nn.Linear(64 * 7 * 7, 1024)
         self.dense_two = nn.Linear(1024, 10)
 
-        self.relu = nn.ReLU()
+        self.relu = nn.LeakyReLU()
 
     def logits(self, x):
         #x = self.relu(x)

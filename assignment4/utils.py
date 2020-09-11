@@ -26,24 +26,34 @@ def train2(model, x_train, y_train, char_encodings, index_to_char, emojis, learn
     print("x_train len: ", len(x_train[0][0]))
     # print(x_train)
     for epoch in range(epochs):
-        model.reset()
+        model.reset(7)
         model.loss(x_train, y_train).backward()
         optimizer.step()
         optimizer.zero_grad()
         if epoch % 10 == 0:
-            model.reset()
             print("EPOCH:", epoch)
-            tests = ['hat ', 'matt', "son ", "rat "]
-            tests2 = ['matt', 'rat ', 'cap ', 'son ', 'hat ', 'cat ', 'flat']
-
-            for test in tests:
+            tests = ['hat ', 'cat ', "matt", "rat "]
+            tests2 = ['mat ', 'rat ', 'ca  ', ' o  ', 'hat ', 'cat ', 'flat']
+            model.reset(7)
+            test_tensor = torch.tensor([encode_word(word, char_encodings, index_to_char) for word in tests2])
+            print(test_tensor.shape)
+            # test_tensor = test_tensor.reshape(4, 7, 14)
+            """for test in tests2:
                 test_encoding = encode_word(test, char_encodings, index_to_char)
                 # print(test_encoding)
                 test_tensor = torch.tensor([test_encoding])
-                y = model.f(test_tensor)
-                index = y.argmax(1).numpy()[0]
+                print(test_tensor.shape)
+                test_tensor.reshape(4, 7, 14)"""
 
-                print(test, emojis[index])
+            y = model.f(torch.transpose(test_tensor, 0, 1))
+
+            y_list = y.argmax(1).numpy()
+            print(y_list)
+            y = 0
+            for word in tests2:
+                i = y_list[y]
+                print(word, emojis[i])
+                y += 1
 
 def gen_mm_data():
     hello_x = list(" hello world")
