@@ -84,8 +84,8 @@ if __name__ == "__main__":
 
         label1 = "population"
         label2 = "habitat"
-        feature_dict = build_feature_dict("data/cleaned_features.txt")
-        data_frames = build_pandas(feature_dict, "data/agaricus-lepiota.data")
+        feature_dict = build_feature_dict("public_data/cleaned_features.txt")
+        data_frames = build_pandas(feature_dict, "public_data/agaricus-lepiota.data")
         x, y, amounts = get_overlap_amount(data_frames, label1, label2)
         # plt.scatter(x=x, y=y, s=amounts)
         # plt.show()
