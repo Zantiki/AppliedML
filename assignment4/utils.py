@@ -36,7 +36,6 @@ def train2(model, x_train, y_train, char_encodings, index_to_char, emojis, learn
             tests2 = ['mat ', 'rat ', 'ca  ', ' o  ', 'hat ', 'cat ', 'flat']
             model.reset(7)
             test_tensor = torch.tensor([encode_word(word, char_encodings, index_to_char) for word in tests2])
-            print(test_tensor.shape)
             # test_tensor = test_tensor.reshape(4, 7, 14)
             """for test in tests2:
                 test_encoding = encode_word(test, char_encodings, index_to_char)
@@ -48,7 +47,6 @@ def train2(model, x_train, y_train, char_encodings, index_to_char, emojis, learn
             y = model.f(torch.transpose(test_tensor, 0, 1))
 
             y_list = y.argmax(1).numpy()
-            print(y_list)
             y = 0
             for word in tests2:
                 i = y_list[y]
@@ -75,9 +73,6 @@ def gen_mm_data():
         index_of_char = chars.index(char)
         y_train_array.append(char_encodings[index_of_char])
 
-    print(x_train_array)
-    print(y_train_array)
-
     x_train = torch.tensor(x_train_array)
     y_train = torch.tensor(y_train_array)
 
@@ -94,12 +89,9 @@ def encode_word(word, char_encodings, chars):
 
 def gen_mo_data():
     emojies = ['🤓', '🐀️', '🧢️', '👶️', '🎩️' , '🐈️', '🏢️' ]
-    # , '🐀️', '🧢️', '👶️', '🎩️' , '🐈️', '🏢️', '🤬'
-    # , 'rat ', 'cap ', 'son ', 'hat ', 'cat ', 'flat', 'brat'
     words = ['matt', 'rat ', 'cap ', 'sony', 'hat ', 'cat ', 'flat']
     chars = [c for c in ''.join(set(''.join(words)))]
 
-    print(chars)
     char_encodings = []
     emoji_encodings = []
     for i in range(len(chars)):
