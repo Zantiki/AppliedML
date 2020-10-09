@@ -72,7 +72,6 @@ def train():
         current_state = discretize_state(env.reset())
 
         done = False
-
         # Looping for each step
         while not done:
             steps[e] += 1
