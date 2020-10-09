@@ -10,7 +10,7 @@ min_lr=0.05
 min_epsilon=0.1
 discount=1.0
 decay=25
-env = gym.make("CartPole-v1")
+env = gym.make("CartPole-v0")
 
 upper_bounds = [env.observation_space.high[0], 0.5, env.observation_space.high[2], math.radians(50) / 1.]
 lower_bounds = [env.observation_space.low[0], -0.5, env.observation_space.low[2], -math.radians(50) / 1.]
