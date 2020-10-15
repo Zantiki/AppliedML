@@ -5,48 +5,52 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 buckets=(3, 3, 6, 6)
-num_episodes=600
-min_lr=0.05
-min_epsilon=0.1
-discount=1.0
+num_episodes=1000
+min_lr=0.01
+
+# Epsilon: Describes the lower bound of exploring, i.e doing something at random
+min_epsilon=0.01
+# Gamma: discount factor between immediate or future rewards
+gamma=0.99
+# Number at which we adjust the epsilon/learning_rate-convergence towards min_lr/min_epsilon
 decay=25
 env = gym.make("CartPole-v0")
-
+# Used to scale discrete states properly
 upper_bounds = [env.observation_space.high[0], 0.5, env.observation_space.high[2], math.radians(50) / 1.]
 lower_bounds = [env.observation_space.low[0], -0.5, env.observation_space.low[2], -math.radians(50) / 1.]
+
 Q_table = np.zeros(buckets + (env.action_space.n,))
 steps = np.zeros(num_episodes)
 
 
 def get_epsilon(t):
+    """
+    Balance out randomness as the number of episodes get higher
+    :param t: the episode
+    :return:
+    """
     return max(min_epsilon, min(1., 1. - math.log10((t + 1) / decay)))
 
 
 def get_learning_rate(t):
+    """
+    Balance out the learning rate as the number of episodes get higher
+    :param t: the episode
+    :return:
+    """
     return max(min_lr, min(1., 1. - math.log10((t + 1) / decay)))
 
 
-def normalize(action_vector, epsilon):
-
-    total = sum(action_vector)
-    new_vector = (1 - epsilon) * action_vector / (total)
-    new_vector += epsilon / 2.0
-    return new_vector
-
-
-def get_action( state, e):
-    obs = discretize_state(state)
-    action_vector = Q_table[obs]
-    epsilon = get_epsilon(e)
-    action_vector = normalize(action_vector, epsilon)
-    return action_vector
-
-
 def discretize_state(obs):
+    """
+    Discretize the contionous possible states of the cartpole to approximate by q-value.
+    We do this by adding the otherwise tiny continous values as a range described by the bucket
+    :param obs:
+    :return:
+    """
     discretized = list()
     for i in range(len(obs)):
-        scaling = ((obs[i] + abs(lower_bounds[i]))
-                   / (upper_bounds[i] - lower_bounds[i]))
+        scaling = ((obs[i] + abs(lower_bounds[i]))/(upper_bounds[i] - lower_bounds[i]))
         new_obs = int(round((buckets[i] - 1) * scaling))
         new_obs = min(buckets[i] - 1, max(0, new_obs))
         discretized.append(new_obs)
@@ -54,6 +58,7 @@ def discretize_state(obs):
 
 
 def choose_action(state, e):
+    """Select action from Q if epsilon is high enough"""
     if (np.random.random() < get_epsilon(e)):
         return env.action_space.sample()
     else:
@@ -61,9 +66,18 @@ def choose_action(state, e):
 
 
 def update_q(state, action, reward, new_state, e):
+    """
+    Update q-table by relevant formula.
+    :param state:
+    :param action:
+    :param reward:
+    :param new_state:
+    :param e:
+    :return:
+    """
     Q_table[state][action] += (get_learning_rate(e) *
                                     (reward
-                                     + discount * np.max(Q_table[new_state])
+                                     + gamma * np.max(Q_table[new_state])
                                      - Q_table[state][action]))
 
 def train():
@@ -92,7 +106,7 @@ def plot_learning():
     plt.show()
     t = 0
     for i in range(num_episodes):
-        if steps[i] > 200:
+        if steps[i] > 195:
             t+=1
     print(t, "episodes were successfully completed.")
 
